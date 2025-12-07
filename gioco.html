@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="UTF-8">
+  <title>Party Game / Gioco alcolico</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "SF Pro Text", sans-serif;
+    }
+
+    body {
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: radial-gradient(circle at top, #ff8a00 0, #1a1a1a 55%, #000000 100%);
+      color: #f5f5f5;
+      padding: 16px;
+    }
+
+    .card {
+      width: 100%;
+      max-width: 480px;
+      background: #111111dd;
+      backdrop-filter: blur(12px);
+      border-radius: 24px;
+      padding: 20px;
+      box-shadow: 0 18px 35px rgba(0, 0, 0, 0.6);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .title {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 4px;
+      text-align: center;
+    }
+
+    .subtitle {
+      font-size: 0.9rem;
+      opacity: 0.8;
+      text-align: center;
+      margin-bottom: 16px;
+    }
+
+    .section-title {
+      font-size: 0.95rem;
+      font-weight: 600;
+      margin-bottom: 6px;
+      margin-top: 14px;
+    }
+
+    label {
+      font-size: 0.85rem;
+      opacity: 0.9;
+    }
+
+    input, select, button, textarea {
+      border-radius: 999px;
+      border: none;
+      outline: none;
+      padding: 10px 14px;
+      font-size: 0.9rem;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      background: #222;
+      color: #f5f5f5;
+      border-radius: 12px;
+      border: 1px solid rgba(255, 255, 255, 0.1);
+      margin-top: 4px;
+    }
+
+    textarea {
+      min-height: 60px;
+      resize: vertical;
+    }
+
+    .chip-row {
+      display: flex;
+      gap: 8px;
+      margin-top: 6px;
+    }
+
+    .chip {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 999px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      background: linear-gradient(135deg, #222, #181818);
+      font-size: 0.8rem;
+      text-align: center;
+      cursor: pointer;
+      opacity: 0.85;
+    }
+
+    .chip.selected {
+      background: linear-gradient(135deg, #ff8a00, #ff3b3b);
+      border-color: transparent;
+      opacity: 1;
+    }
+
+    .btn-primary {
+      width: 100%;
+      margin-top: 16px;
+      background: linear-gradient(135deg, #ff8a00, #ff3b3b);
+      color: #111;
+      font-weight: 700;
+      cursor: pointer;
+      transition: transform 0.1s ease, box-shadow 0.1s ease, filter 0.1s ease;
+      border-radius: 999px;
+    }
+
+    .btn-primary:active {
+      transform: scale(0.97);
+      box-shadow: 0 0 0;
+      filter: brightness(0.95);
+    }
+
+    .btn-secondary {
+      background: #222;
+      color: #f5f5f5;
+      border-radius: 999px;
+      padding: 8px 14px;
+      font-size: 0.8rem;
+      cursor: pointer;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .turn-box {
+      margin-top: 16px;
+      padding: 14px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #1f1f1f, #111);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .turn-label {
+      font-size: 0.8rem;
+      opacity: 0.7;
+    }
+
+    .player-name {
+      font-size: 1.1rem;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .mode-label {
+      display: inline-block;
+      margin-top: 8px;
+      font-size: 0.8rem;
+      padding: 4px 10px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+
+    .mode-verita { color: #ffdd59; }
+    .mode-penitenza { color: #ff5e57; }
+    .mode-mini { color: #0be881; }
+
+    .content-text {
+      margin-top: 10px;
+      font-size: 0.9rem;
+      line-height: 1.3;
+    }
+
+    .score-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-top: 10px;
+    }
+
+    .score-tag {
+      font-size: 0.8rem;
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(255, 255, 255, 0.06);
+    }
+
+    .controls {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .scores-box {
+      margin-top: 18px;
+      padding-top: 10px;
+      border-top: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .scores-title {
+      font-size: 0.85rem;
+      opacity: 0.7;
+      margin-bottom: 4px;
+    }
+
+    .scores-list {
+      font-size: 0.85rem;
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+    }
+
+    .score-pill {
+      padding: 4px 8px;
+      border-radius: 999px;
+      background: rgba(0, 0, 0, 0.4);
+      border: 1px solid rgba(255, 255, 255, 0.12);
+    }
+
+    .footer {
+      margin-top: 10px;
+      font-size: 0.7rem;
+      opacity: 0.6;
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <div class="title">Party Game</div>
+    <div class="subtitle">Gira sul browser, anche da telefono.</div>
+
+    <div>
+      <div class="section-title">Giocatori</div>
+      <label for="players">Inserisci i nomi separati da virgola:</label>
+      <input id="players" type="text" placeholder="es. Luca, Marco, Giulia">
+    </div>
+
+    <div>
+      <div class="section-title">Difficoltà</div>
+      <div class="chip-row">
+        <div class="chip selected" data-difficulty="light">Light</div>
+        <div class="chip" data-difficulty="medium">Medium</div>
+        <div class="chip" data-difficulty="hard">Hard</div>
+      </div>
+    </div>
+
+    <button class="btn-primary" id="startBtn">Inizia partita</button>
+
+    <div id="gameArea" style="display:none;">
+      <div class="turn-box" id="turnBox">
+        <div class="turn-label">Giocatore attuale:</div>
+        <div class="player-name" id="playerName">-</div>
+        <div class="mode-label" id="modeLabel">-</div>
+        <div class="content-text" id="contentText">Premi "Nuovo turno" per iniziare.</div>
+
+        <div class="score-row">
+          <span class="score-tag" id="playerScoreTag"></span>
+        </div>
+
+        <div class="controls">
+          <button class="btn-secondary" id="plusOneBtn">+1 punto</button>
+          <button class="btn-secondary" id="plusTwoBtn">+2 punti</button>
+          <button class="btn-secondary" id="miniGameBtn">Mini-gioco</button>
+          <button class="btn-secondary" id="newTurnBtn">Nuovo turno</button>
+        </div>
+      </div>
+
+      <div class="scores-box">
+        <div class="scores-title">Punteggi sbronza (più alto = più distrutto):</div>
+        <div class="scores-list" id="scoresList"></div>
+      </div>
+
+      <div class="footer">
+        Salva questa pagina su telefono e aprila dal browser per usarla come app.
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const penitenze = {
+      light: [
+        "Bevi un sorso (anche acqua va bene).",
+        "Scegli qualcuno che beve un sorso.",
+        "Fai 5 flessioni.",
+        "Parla con accento straniero per un turno.",
+        "Racconta un aneddoto imbarazzante soft."
+      ],
+      medium: [
+        "Bevi 2 sorsi.",
+        "Scegli qualcuno che beve 2 sorsi.",
+        "Rispondi a una domanda scomoda scelta dal gruppo.",
+        "Scambia posto con qualcuno.",
+        "Parla solo con domande fino al tuo prossimo turno."
+      ],
+      hard: [
+        "Bevi 3 sorsi.",
+        "Scegli due persone che bevono 2 sorsi.",
+        "Racconta un segreto imbarazzante.",
+        "Lascia che il gruppo scelga una penitenza extra.",
+        "Fai una penitenza scelta dalla persona alla tua destra."
+      ]
+    };
+
+    const verita = [
+      "Qual è stata la cosa più imbarazzante che ti è successa di recente?",
+      "Hai mai mentito a qualcuno di questo gruppo?",
+      "Qual è la cosa più stupida che hai fatto per impressionare qualcuno?",
+      "C'è qualcosa che nascondi alle persone qui presenti?",
+      "Se potessi cancellare un ricordo, quale sarebbe?"
+    ];
+
+    let giocatori = [];
+    let punteggi = {};
+    let difficolta = "light";
+    let giocatoreAttuale = null;
+
+    const chips = document.querySelectorAll(".chip");
+    const startBtn = document.getElementById("startBtn");
+    const gameArea = document.getElementById("gameArea");
+    const playerNameEl = document.getElementById("playerName");
+    const modeLabelEl = document.getElementById("modeLabel");
+    const contentTextEl = document.getElementById("contentText");
+    const scoresListEl = document.getElementById("scoresList");
+    const playerScoreTagEl = document.getElementById("playerScoreTag");
+
+    const plusOneBtn = document.getElementById("plusOneBtn");
+    const plusTwoBtn = document.getElementById("plusTwoBtn");
+    const miniGameBtn = document.getElementById("miniGameBtn");
+    const newTurnBtn = document.getElementById("newTurnBtn");
+
+    chips.forEach(chip => {
+      chip.addEventListener("click", () => {
+        chips.forEach(c => c.classList.remove("selected"));
+        chip.classList.add("selected");
+        difficolta = chip.dataset.difficulty;
+      });
+    });
+
+    function aggiornaClassifica() {
+      scoresListEl.innerHTML = "";
+      const entries = Object.entries(punteggi).sort((a, b) => b[1] - a[1]);
+      entries.forEach(([nome, punti]) => {
+        const span = document.createElement("span");
+        span.className = "score-pill";
+        span.textContent = `${nome}: ${punti}`;
+        scoresListEl.appendChild(span);
+      });
+    }
+
+    function aggiornaTagGiocatore() {
+      if (!giocatoreAttuale) {
+        playerScoreTagEl.textContent = "";
+        return;
+      }
+      playerScoreTagEl.textContent = `${giocatoreAttuale} → ${punteggi[giocatoreAttuale]} punti sbronza`;
+    }
+
+    function scegliTurno() {
+      if (giocatori.length === 0) {
+        return;
+      }
+
+      giocatoreAttuale = giocatori[Math.floor(Math.random() * giocatori.length)];
+      playerNameEl.textContent = giocatoreAttuale;
+
+      const tipi = ["verita", "penitenza", "mini"];
+      const tipo = tipi[Math.floor(Math.random() * tipi.length)];
+
+      if (tipo === "verita") {
+        const domanda = verita[Math.floor(Math.random() * verita.length)];
+        modeLabelEl.textContent = "VERITÀ";
+        modeLabelEl.className = "mode-label mode-verita";
+        contentTextEl.textContent = domanda;
+      } else if (tipo === "penitenza") {
+        const lista = penitenze[difficolta];
+        const pen = lista[Math.floor(Math.random() * lista.length)];
+        modeLabelEl.textContent = "PENITENZA (" + difficolta.toUpperCase() + ")";
+        modeLabelEl.className = "mode-label mode-penitenza";
+        contentTextEl.textContent = pen;
+      } else {
+        modeLabelEl.textContent = "MINI-GIOCO";
+        modeLabelEl.className = "mode-label mode-mini";
+        const rand = Math.floor(Math.random() * 2);
+        if (rand === 0) {
+          contentTextEl.textContent = "Mini-gioco: indovina un numero da 1 a 5. Se sbagli, +2 punti sbronza.";
+        } else {
+          contentTextEl.textContent = "Mini-gioco: testa o croce. Se perdi, +2 punti sbronza.";
+        }
+      }
+
+      aggiornaTagGiocatore();
+    }
+
+    function aggiungiPunti(qt) {
+      if (!giocatoreAttuale) return;
+      punteggi[giocatoreAttuale] += qt;
+      aggiornaClassifica();
+      aggiornaTagGiocatore();
+    }
+
+    function eseguiMiniGioco() {
+      if (!giocatoreAttuale) return;
+
+      const tipo = Math.floor(Math.random() * 2);
+      if (tipo === 0) {
+        const segreto = Math.floor(Math.random() * 5) + 1;
+        const inputNumero = prompt("Mini-gioco: indovina il numero (1-5):");
+        const numero = parseInt(inputNumero, 10);
+        if (isNaN(numero) || numero < 1 || numero > 5 || numero !== segreto) {
+          alert("Sbagliato! Il numero era " + segreto + ". +2 punti sbronza.");
+          aggiungiPunti(2);
+        } else {
+          alert("Hai indovinato! Nessun punto sbronza.");
+        }
+      } else {
+        const scelta = prompt("Mini-gioco: testa o croce? (t/c):");
+        if (!scelta || !["t", "c"].includes(scelta.toLowerCase())) {
+          alert("Scelta non valida. Considerato perso. +2 punti sbronza.");
+          aggiungiPunti(2);
+          return;
+        }
+        const lancio = Math.random() < 0.5 ? "t" : "c";
+        const testo = lancio === "t" ? "testa" : "croce";
+        if (lancio === scelta.toLowerCase()) {
+          alert("È uscito " + testo + ". Hai vinto! Nessun punto sbronza.");
+        } else {
+          alert("È uscito " + testo + ". Hai perso! +2 punti sbronza.");
+          aggiungiPunti(2);
+        }
+      }
+    }
+
+    startBtn.addEventListener("click", () => {
+      const playersInput = document.getElementById("players").value;
+      const parts = playersInput.split(",").map(p => p.trim()).filter(p => p.length > 0);
+
+      if (parts.length === 0) {
+        alert("Inserisci almeno un giocatore.");
+        return;
+      }
+
+      giocatori = parts;
+      punteggi = {};
+      giocatori.forEach(g => punteggi[g] = 0);
+
+      gameArea.style.display = "block";
+      startBtn.textContent = "Partita in corso";
+      startBtn.disabled = true;
+
+      aggiornaClassifica();
+      scegliTurno();
+    });
+
+    plusOneBtn.addEventListener("click", () => aggiungiPunti(1));
+    plusTwoBtn.addEventListener("click", () => aggiungiPunti(2));
+    newTurnBtn.addEventListener("click", scegliTurno);
+    miniGameBtn.addEventListener("click", eseguiMiniGioco);
+  </script>
+</body>
+</html>
